@@ -550,6 +550,7 @@
       background: var(--lime);
       opacity: 0.85;
     }
+    .clip-bar { display: none; }
 
     .clip-check {
       position: absolute;
@@ -954,6 +955,11 @@
     body.english-page .fluency-card:hover { border-color: #f0d38a; }
     body.english-page .fluency-card.done { border-color: #f0d38a; background: rgba(240,211,138,.08); }
     body.english-page .fluency-check { accent-color: #f0d38a; }
+    body.english-page .fluency-card,
+    body.english-page .fluency-card:nth-child(3n + 2),
+    body.english-page .fluency-card:hover { border-top: 0; }
+    body.english-page .fluency-stage:hover { border-left-color: #f0d38a; }
+    body.english-page .fluency-card a:hover { color: #f0d38a; }
 
     @media(max-width:680px) {
       .fluency-section {
