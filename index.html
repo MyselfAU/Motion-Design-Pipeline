@@ -1,547 +1,1368 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Motion Design Pipeline</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Crect x='5' y='4' width='13' height='11' rx='3' fill='%23c6ff3d'/%3E%3Crect x='19' y='12' width='9' height='9' rx='2.4' fill='%23c6ff3d'/%3E%3Crect x='10' y='20' width='7' height='7' rx='2' fill='%23c6ff3d'/%3E%3Crect x='4' y='25' width='3.5' height='3.5' rx='1' fill='%23c6ff3d'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#0a0a0a;
-    --panel:#131313;
-    --panel-2:#191919;
-    --line:rgba(255,255,255,0.10);
-    --text:#ededea;
-    --text-dim:#84827c;
-    --red:#ff3b30;
-    --lime:#c6ff3d;
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0;
-    background:
-      radial-gradient(ellipse 1000px 700px at 10% -5%, rgba(198,255,61,0.16), transparent 60%),
-      radial-gradient(ellipse 1000px 800px at 100% 35%, rgba(198,255,61,0.12), transparent 60%),
-      radial-gradient(ellipse 800px 600px at 15% 100%, rgba(198,255,61,0.10), transparent 60%),
-      radial-gradient(ellipse 700px 500px at 90% 95%, rgba(198,255,61,0.08), transparent 60%),
-      var(--bg);
-    color:var(--text);
-    font-family:'Inter', sans-serif;
-    line-height:1.55;
-    -webkit-font-smoothing:antialiased;
-  }
-  .grain{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    z-index:50;
-    opacity:0.035;
-    mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motion Design Pipeline</title>
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0a'/%3E%3Crect x='5' y='4' width='13' height='11' rx='3' fill='%23c6ff3d'/%3E%3Crect x='19' y='12' width='9' height='9' rx='2.4' fill='%23c6ff3d'/%3E%3Crect x='10' y='20' width='7' height='7' rx='2' fill='%23c6ff3d'/%3E%3Crect x='4' y='25' width='3.5' height='3.5' rx='1' fill='%23c6ff3d'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --panel: #131313;
+      --panel-2: #191919;
+      --line: rgba(255, 255, 255, 0.10);
+      --text: #ededea;
+      --text-dim: #84827c;
+      --red: #ff3b30;
+      --lime: #c6ff3d;
+    }
 
-  h1,h2{
-    font-family:'Anton', sans-serif;
-    font-weight:400;
-    letter-spacing:0.01em;
-    margin:0;
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  /* ---------- TITLE BAR ---------- */
-  .titlebar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:12px 22px;
-    border-bottom:1px solid var(--line);
-    font-size:0.78rem;
-    color:var(--text-dim);
-  }
-  .titlebar .left{display:flex;align-items:center;gap:8px;}
-  .eq{
-    display:flex;
-    align-items:flex-end;
-    gap:2px;
-    height:10px;
-  }
-  .eq span{
-    width:2px;
-    background:var(--lime);
-    animation:eq 1.1s ease-in-out infinite;
-  }
-  .eq span:nth-child(1){height:40%; animation-delay:-0.9s;}
-  .eq span:nth-child(2){height:100%; animation-delay:-0.5s;}
-  .eq span:nth-child(3){height:65%; animation-delay:-0.2s;}
-  .eq span:nth-child(4){height:85%; animation-delay:-0.7s;}
-  @keyframes eq{
-    0%,100%{transform:scaleY(0.4);}
-    50%{transform:scaleY(1);}
-  }
-  @media (prefers-reduced-motion:reduce){
-    .eq span{animation:none; transform:scaleY(0.7);}
-    html{scroll-behavior:auto;}
-  }
-  .logo{
-    display:block;
-    flex-shrink:0;
-  }
-  .logo rect{
-    animation:logoFloat 2.4s ease-in-out infinite;
-  }
-  .logo .sq1{animation-delay:0s;}
-  .logo .sq2{animation-delay:-0.6s;}
-  .logo .sq3{animation-delay:-1.2s;}
-  .logo .sq4{animation-delay:-1.8s;}
-  @keyframes logoFloat{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-1.4px);}
-  }
-  @media (prefers-reduced-motion:reduce){
-    .logo rect{animation:none;}
-  }
-  .titlebar .filename{color:var(--text); font-weight:900;}
-  .titlebar .right{font-variant-numeric:tabular-nums;}
+    html {
+      scroll-behavior: smooth;
+    }
 
-  /* ---------- SPROCKETS ---------- */
-  .sprockets{
-    height:14px;
-    background-image:repeating-linear-gradient(90deg, transparent 0 12px, rgba(255,255,255,0.14) 12px 13px, transparent 13px 26px);
-    background-position:center;
-    opacity:0.5;
-  }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse 1000px 700px at 10% -5%, rgba(198, 255, 61, 0.16), transparent 60%),
+        radial-gradient(ellipse 1000px 800px at 100% 35%, rgba(198, 255, 61, 0.12), transparent 60%),
+        radial-gradient(ellipse 800px 600px at 15% 100%, rgba(198, 255, 61, 0.10), transparent 60%),
+        radial-gradient(ellipse 700px 500px at 90% 95%, rgba(198, 255, 61, 0.08), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  /* ---------- HERO ---------- */
-  .hero{
-    padding:56px 24px 42px;
-    max-width:920px;
-    margin:0 auto;
-  }
-  .hero h1{
-    font-size:clamp(2.4rem, 6vw, 4.2rem);
-    line-height:0.98;
-    margin-bottom:16px;
-  }
-  .hero .sub{
-    color:var(--text-dim);
-    max-width:480px;
-    font-size:1rem;
-    margin-bottom:38px;
-  }
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+      opacity: 0.035;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    }
 
-  /* ---------- SCRUBBER ---------- */
-  .scrubber-wrap{
-    position:relative;
-  }
-  .scrubber-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    margin-bottom:10px;
-  }
-  .scrubber-label{
-    font-size:0.75rem;
-    letter-spacing:0.08em;
-    color:var(--text-dim);
-  }
-  .scrubber-count{
-    font-size:0.95rem;
-    color:var(--lime);
-    font-variant-numeric:tabular-nums;
-    font-weight:600;
-  }
-  .scrubber{
-    position:relative;
-    height:34px;
-  }
-  .scrubber-line{
-    position:absolute;
-    top:8px; left:0; right:0;
-    height:2px;
-    background:var(--line);
-  }
-  .scrubber-fill{
-    position:absolute;
-    top:8px; left:0;
-    height:2px;
-    width:0%;
-    background:var(--lime);
-    transition:width 0.4s ease;
-  }
-  .tick{
-    position:absolute;
-    top:2px;
-    width:1px;
-    height:14px;
-    background:var(--line);
-  }
-  .tick-label{
-    position:absolute;
-    top:20px;
-    transform:translateX(-50%);
-    font-size:0.68rem;
-    color:var(--text-dim);
-  }
-  .playhead{
-    position:absolute;
-    top:-2px;
-    width:2px;
-    height:18px;
-    background:var(--red);
-    transform:translateX(-50%);
-    transition:left 0.4s ease;
-  }
-  .playhead::before{
-    content:"";
-    position:absolute;
-    top:-6px; left:50%;
-    transform:translateX(-50%);
-    width:0;height:0;
-    border-left:5px solid transparent;
-    border-right:5px solid transparent;
-    border-top:6px solid var(--red);
-  }
+    h1,
+    h2 {
+      font-family: 'Anton', sans-serif;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
 
-  /* ---------- LAYOUT ---------- */
-  .wrap{
-    max-width:920px;
-    margin:0 auto;
-    padding:10px 24px 100px;
-  }
+    /* ---------- TITLE BAR ---------- */
+    .titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 22px;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
 
-  .ritual{
-    border:1px solid var(--line);
-    padding:20px 22px;
-    margin:36px 0 46px;
-  }
-  .ritual .tag{
-    font-size:0.72rem;
-    letter-spacing:0.08em;
-    color:var(--red);
-    margin-bottom:10px;
-  }
-  .ritual ol{
-    margin:0;
-    padding-left:18px;
-    color:var(--text-dim);
-    font-size:0.92rem;
-  }
-  .ritual li{margin-bottom:5px;}
-  .ritual li strong{color:var(--text);font-weight:600;}
+    .titlebar .left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-  /* ---------- TRACKS ---------- */
-  .track{
-    border-top:1px solid var(--line);
-    padding:22px 0;
-    border-left:3px solid transparent;
-  }
-  .track:last-child{border-bottom:1px solid var(--line);}
-  .track.complete{border-left-color:var(--lime);}
+    .eq {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 10px;
+    }
 
-  .track-header{
-    width:100%;
-    background:none;
-    border:none;
-    color:var(--text);
-    text-align:left;
-    cursor:pointer;
-    padding:0 0 0 16px;
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:16px;
-  }
-  .track-meta{
-    font-size:0.72rem;
-    letter-spacing:0.08em;
-    color:var(--text-dim);
-    margin-bottom:5px;
-  }
-  .track.complete .track-meta{color:var(--lime);}
-  .track-title{
-    font-family:'Anton', sans-serif;
-    font-weight:400;
-    font-size:1.5rem;
-    margin-bottom:3px;
-  }
-  .track-theme{
-    color:var(--text-dim);
-    font-size:0.9rem;
-  }
-  .chevron{
-    flex-shrink:0;
-    width:16px;height:16px;
-    color:var(--text-dim);
-    transition:transform 0.25s ease;
-    margin-top:8px;
-  }
-  .track.open .chevron{transform:rotate(180deg);}
+    .eq span {
+      width: 2px;
+      background: var(--lime);
+      animation: eq 1.1s ease-in-out infinite;
+    }
 
-  .clip-lane{
-    display:flex;
-    gap:12px;
-    overflow-x:auto;
-    padding:18px 0 4px 16px;
-    scrollbar-width:thin;
-  }
-  .clip{
-    flex-shrink:0;
-    width:144px;
-  }
-  .clip-thumb{
-    position:relative;
-    display:block;
-    width:144px;
-    height:81px;
-    background:var(--panel-2);
-    overflow:hidden;
-  }
-  .clip-thumb img{
-    width:100%;height:100%;
-    object-fit:cover;
-    display:block;
-    filter:saturate(0.85) contrast(1.05);
-    transition:transform 0.3s ease, filter 0.3s ease;
-  }
-  .clip-thumb:hover img{
-    transform:scale(1.06);
-    filter:saturate(1.1) contrast(1.1);
-  }
-  .clip-bar{
-    position:absolute;
-    top:0;left:0;right:0;
-    height:3px;
-    background:var(--lime);
-    opacity:0.85;
-  }
-  .clip-check{
-    position:absolute;
-    top:6px; right:6px;
-    width:15px;height:15px;
-    accent-color:var(--lime);
-    cursor:pointer;
-    z-index:2;
-  }
-  .clip-title{
-    font-size:0.8rem;
-    margin-top:8px;
-    display:block;
-    color:var(--text);
-    text-decoration:none;
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
-    overflow:hidden;
-  }
-  .clip-title:hover{color:var(--lime);}
-  .clip.checked .clip-thumb img{filter:grayscale(0.8) opacity(0.45);}
-  .clip.checked .clip-title{color:var(--text-dim); text-decoration:line-through; text-decoration-color:var(--line);}
-  .clip-note{
-    font-size:0.7rem;
-    color:var(--text-dim);
-    margin-top:3px;
-  }
+    .eq span:nth-child(1) {
+      height: 40%;
+      animation-delay: -0.9s;
+    }
 
-  .marker{
-    display:none;
-    margin:16px 0 4px 16px;
-    padding:14px 16px;
-    border-left:2px solid var(--red);
-    background:var(--panel);
-  }
-  .track.open .marker{display:block;}
-  .marker-label{
-    font-size:0.7rem;
-    letter-spacing:0.08em;
-    color:var(--red);
-    margin-bottom:6px;
-  }
-  .marker-text{
-    font-size:0.92rem;
-    color:var(--text);
-  }
+    .eq span:nth-child(2) {
+      height: 100%;
+      animation-delay: -0.5s;
+    }
 
-  /* ---------- BIN (bonus) ---------- */
-  .bin-title{
-    margin:56px 0 4px 16px;
-    font-size:0.72rem;
-    letter-spacing:0.08em;
-    color:var(--text-dim);
-  }
-  .bin{
-    margin:14px 0 0;
-    padding:14px;
-    border:1px dashed var(--line);
-    display:flex;
-    gap:16px;
-    flex-wrap:wrap;
-  }
-  .bin-item{width:160px;}
-  .bin-note{
-    font-size:0.72rem;
-    color:var(--text-dim);
-    margin-top:4px;
-  }
+    .eq span:nth-child(3) {
+      height: 65%;
+      animation-delay: -0.2s;
+    }
 
-  .footer{
-    margin:64px 16px 0;
-    padding-top:24px;
-    border-top:1px solid var(--line);
-    color:var(--text-dim);
-    font-size:0.88rem;
-  }
+    .eq span:nth-child(4) {
+      height: 85%;
+      animation-delay: -0.7s;
+    }
 
-  @media (max-width:600px){
-    .hero{padding:44px 18px 30px;}
-    .wrap{padding:0 18px 80px;}
-    .track-header{padding-left:0;}
-    .track{border-left:none; padding-left:0;}
-    .track.complete{border-left:none; border-top-color:var(--lime); border-top-width:2px;}
-    .clip-lane{padding-left:0;}
-    .marker{margin-left:0;}
-    .bin-title{margin-left:0;}
-  }
-</style>
+    @keyframes eq {
+
+      0%,
+      100% {
+        transform: scaleY(0.4);
+      }
+
+      50% {
+        transform: scaleY(1);
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      .eq span {
+        animation: none;
+        transform: scaleY(0.7);
+      }
+
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
+    .logo {
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .logo rect {
+      animation: logoFloat 2.4s ease-in-out infinite;
+    }
+
+    .logo .sq1 {
+      animation-delay: 0s;
+    }
+
+    .logo .sq2 {
+      animation-delay: -0.6s;
+    }
+
+    .logo .sq3 {
+      animation-delay: -1.2s;
+    }
+
+    .logo .sq4 {
+      animation-delay: -1.8s;
+    }
+
+    @keyframes logoFloat {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-1.4px);
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      .logo rect {
+        animation: none;
+      }
+    }
+
+    .titlebar .filename {
+      color: var(--text);
+      font-weight: 900;
+    }
+
+    .titlebar .right {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .site-nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .site-nav a {
+      color: var(--text-dim);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 5px 9px;
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+      transition: color .2s, border-color .2s;
+    }
+
+    .site-nav a:hover {
+      color: var(--lime);
+      border-color: var(--lime);
+    }
+
+    .site-nav a.active {
+      color: var(--lime);
+      border-color: var(--lime);
+    }
+
+    .language-icon {
+      display: none;
+    }
+
+    body.english-page .motion-icon {
+      display: none;
+    }
+
+    body.english-page .language-icon {
+      display: block;
+    }
+
+    .language-icon .language-letter {
+      transform-origin: 16px 16px;
+    }
+
+    .language-icon .language-orbit {
+      transform-origin: 16px 16px;
+      animation: languageOrbit 2.8s linear infinite;
+    }
+
+
+    body.english-page .language-icon .language-letter {
+      animation: languageLetter 2.8s ease-in-out infinite;
+    }
+
+    @keyframes languageLetter {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-1px)
+      }
+    }
+
+    @keyframes languageOrbit {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+
+    @media(prefers-reduced-motion:reduce) {
+
+      .language-icon .language-letter,
+      .language-icon .language-orbit {
+        animation: none;
+      }
+    }
+
+    .section-rail {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 18px 24px 0;
+      color: var(--text-dim);
+      font-size: .68rem;
+      letter-spacing: .12em;
+    }
+
+    .pipeline-section {
+      background: rgba(10, 10, 10, .2);
+    }
+
+    .page-view {
+      display: none;
+      min-height: calc(100vh - 62px);
+    }
+
+    .page-view.active {
+      display: block;
+    }
+
+    /* ---------- SPROCKETS ---------- */
+    .sprockets {
+      height: 14px;
+      background-image: repeating-linear-gradient(90deg, transparent 0 12px, rgba(255, 255, 255, 0.14) 12px 13px, transparent 13px 26px);
+      background-position: center;
+      opacity: 0.5;
+    }
+
+    /* ---------- HERO ---------- */
+    .hero {
+      padding: 56px 24px 42px;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      line-height: 0.98;
+      margin-bottom: 16px;
+    }
+
+    .hero .sub {
+      color: var(--text-dim);
+      max-width: 480px;
+      font-size: 1rem;
+      margin-bottom: 38px;
+    }
+
+    /* ---------- SCRUBBER ---------- */
+    .scrubber-wrap {
+      position: relative;
+    }
+
+    .scrubber-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+
+    .scrubber-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+
+    .scrubber-count {
+      font-size: 0.95rem;
+      color: var(--lime);
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+
+    .scrubber {
+      position: relative;
+      height: 34px;
+    }
+
+    .scrubber-line {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--line);
+    }
+
+    .scrubber-fill {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: var(--lime);
+      transition: width 0.4s ease;
+    }
+
+    .tick {
+      position: absolute;
+      top: 2px;
+      width: 1px;
+      height: 14px;
+      background: var(--line);
+    }
+
+    .tick-label {
+      position: absolute;
+      top: 20px;
+      transform: translateX(-50%);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+    }
+
+    .playhead {
+      position: absolute;
+      top: -2px;
+      width: 2px;
+      height: 18px;
+      background: var(--red);
+      transform: translateX(-50%);
+      transition: left 0.4s ease;
+    }
+
+    .playhead::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--red);
+    }
+
+    /* ---------- LAYOUT ---------- */
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 10px 24px 100px;
+    }
+
+    .ritual {
+      border: 1px solid var(--line);
+      padding: 20px 22px;
+      margin: 36px 0 46px;
+    }
+
+    .ritual .tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--red);
+      margin-bottom: 10px;
+    }
+
+    .ritual ol {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--text-dim);
+      font-size: 0.92rem;
+    }
+
+    .ritual li {
+      margin-bottom: 5px;
+    }
+
+    .ritual li strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ---------- TRACKS ---------- */
+    .track {
+      border-top: 1px solid var(--line);
+      padding: 22px 0;
+      border-left: 3px solid transparent;
+    }
+
+    .track:last-child {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .track.complete {
+      border-left-color: var(--lime);
+    }
+
+    .track-header {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      padding: 0 0 0 16px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .track-meta {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin-bottom: 5px;
+    }
+
+    .track.complete .track-meta {
+      color: var(--lime);
+    }
+
+    .track-title {
+      font-family: 'Anton', sans-serif;
+      font-weight: 400;
+      font-size: 1.5rem;
+      margin-bottom: 3px;
+    }
+
+    .track-theme {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    .chevron {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      color: var(--text-dim);
+      transition: transform 0.25s ease;
+      margin-top: 8px;
+    }
+
+    .track.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .clip-lane {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 18px 0 4px 16px;
+      scrollbar-width: thin;
+    }
+
+    .clip {
+      flex-shrink: 0;
+      width: 144px;
+    }
+
+    .clip-thumb {
+      position: relative;
+      display: block;
+      width: 144px;
+      height: 81px;
+      background: var(--panel-2);
+      overflow: hidden;
+    }
+
+    .clip-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(0.85) contrast(1.05);
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .clip-thumb:hover img {
+      transform: scale(1.06);
+      filter: saturate(1.1) contrast(1.1);
+    }
+
+    .clip-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--lime);
+      opacity: 0.85;
+    }
+
+    .clip-check {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 15px;
+      height: 15px;
+      accent-color: var(--lime);
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .clip-title {
+      font-size: 0.8rem;
+      margin-top: 8px;
+      display: block;
+      color: var(--text);
+      text-decoration: none;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .clip-title:hover {
+      color: var(--lime);
+    }
+
+    .clip.checked .clip-thumb img {
+      filter: grayscale(0.8) opacity(0.45);
+    }
+
+    .clip.checked .clip-title {
+      color: var(--text-dim);
+      text-decoration: line-through;
+      text-decoration-color: var(--line);
+    }
+
+    .clip-note {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-top: 3px;
+    }
+
+    .marker {
+      display: none;
+      margin: 16px 0 4px 16px;
+      padding: 14px 16px;
+      border-left: 2px solid var(--red);
+      background: var(--panel);
+    }
+
+    .track.open .marker {
+      display: block;
+    }
+
+    .marker-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--red);
+      margin-bottom: 6px;
+    }
+
+    .marker-text {
+      font-size: 0.92rem;
+      color: var(--text);
+    }
+
+    /* ---------- BIN (bonus) ---------- */
+    .bin-title {
+      margin: 56px 0 4px 16px;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+
+    .bin {
+      margin: 14px 0 0;
+      padding: 14px;
+      border: 1px dashed var(--line);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .bin-item {
+      width: 160px;
+    }
+
+    .bin-note {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .footer {
+      margin: 64px 16px 0;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      color: var(--text-dim);
+      font-size: 0.88rem;
+    }
+
+    /* ---------- ENGLISH FLUENCY LAB ---------- */
+    .fluency-section {
+      max-width: none;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+      border-top: none;
+      background: linear-gradient(180deg, rgba(240, 211, 74, .06), transparent 420px);
+    }
+
+    .fluency-section>*:not(.section-rail) {
+      max-width: 920px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .fluency-section h2 {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      line-height: .94;
+      margin: 10px 0 16px;
+      color: #f0d34a;
+    }
+
+    .fluency-kicker {
+      color: #f0d34a;
+      font-size: .72rem;
+      letter-spacing: .13em;
+    }
+
+    .fluency-sub {
+      color: var(--text-dim);
+      max-width: 545px;
+      margin: 0 0 30px;
+    }
+
+    .fluency-loop {
+      border: 1px solid var(--line);
+      padding: 18px 20px;
+      margin: 0 0 42px;
+      background: rgba(240, 211, 74, .035);
+      color: var(--text-dim);
+      font-size: .88rem;
+    }
+
+    .fluency-loop strong {
+      color: var(--text);
+    }
+
+    .fluency-tools {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: end;
+      margin: 0 0 42px;
+      padding: 16px 18px;
+      border: 1px solid rgba(240, 211, 74, .3);
+      background: rgba(16, 16, 13, .72);
+    }
+
+    .fluency-progress-label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-dim);
+      font-size: .7rem;
+      letter-spacing: .08em;
+      margin-bottom: 8px;
+    }
+
+    .fluency-progress-label strong { color: #f0d34a; }
+    .fluency-progress { height: 4px; background: var(--line); overflow: hidden; }
+    .fluency-progress span { display: block; width: 0; height: 100%; background: #f0d34a; transition: width .35s ease; }
+    .fluency-filters { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .fluency-filter { border: 1px solid var(--line); background: transparent; color: var(--text-dim); padding: 7px 9px; font: inherit; font-size: .68rem; cursor: pointer; }
+    .fluency-filter:hover, .fluency-filter.active { color: #10100d; border-color: #f0d34a; background: #f0d34a; }
+
+    .fluency-stage {
+      border-top: 1px solid var(--line);
+      padding: 24px 0 30px;
+    }
+
+    .fluency-stage:last-child {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .fluency-stage h3 {
+      font-family: 'Anton', sans-serif;
+      font-weight: 400;
+      font-size: 1.7rem;
+      margin: 4px 0;
+      color: var(--text);
+    }
+
+    .fluency-theme {
+      color: var(--text-dim);
+      font-size: .84rem;
+      margin-bottom: 15px;
+    }
+
+    .fluency-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .fluency-card {
+      position: relative;
+      background: #191914;
+      border: 1px solid var(--line);
+      padding: 10px;
+      transition: transform .2s, border-color .2s;
+    }
+
+    .fluency-card:hover {
+      transform: translateY(-3px);
+      border-color: #f0d34a;
+    }
+
+    .fluency-card.done { border-color: #f0d34a; background: rgba(240, 211, 74, .08); }
+    .fluency-card.done img { filter: grayscale(1) opacity(.45); }
+    .fluency-card.done .fluency-done { color: #10100d; background: #f0d34a; }
+    .fluency-done { position: absolute; top: 16px; right: 16px; z-index: 2; border: 1px solid rgba(255,255,255,.45); background: rgba(16,16,13,.82); color: #f0d34a; padding: 5px 7px; font: inherit; font-size: .62rem; letter-spacing: .08em; cursor: pointer; }
+    .fluency-stage.is-hidden { display: none; }
+
+    .fluency-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      filter: saturate(.72) sepia(.16);
+    }
+
+    .fluency-card a {
+      display: block;
+      color: var(--text);
+      text-decoration: none;
+      font-size: .82rem;
+      line-height: 1.35;
+      margin-top: 9px;
+    }
+
+    .fluency-card a:hover {
+      color: #f0d34a;
+    }
+
+    .fluency-note {
+      color: var(--text-dim);
+      font-size: .7rem;
+      margin-top: 5px;
+    }
+
+    .fluency-channel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, rgba(240, 211, 74, .15), rgba(255, 139, 61, .1));
+      color: #f0d34a;
+      font-family: 'Anton', sans-serif;
+      font-size: 1.8rem;
+    }
+
+    /* English page theme: night study room + mint/coral signals */
+    body.english-page {
+      background:
+        radial-gradient(ellipse 850px 620px at 8% -8%, rgba(112, 229, 209, .16), transparent 62%),
+        radial-gradient(ellipse 760px 680px at 100% 82%, rgba(255, 128, 102, .13), transparent 62%),
+        #0b101b;
+    }
+
+    body.english-page .fluency-section {
+      --fluency-mint: #70e5d1;
+      --fluency-coral: #ff8066;
+      --fluency-ink: #e9f2f0;
+      background: linear-gradient(180deg, rgba(112, 229, 209, .08), transparent 460px);
+    }
+
+    body.english-page .fluency-kicker,
+    body.english-page .fluency-section h2,
+    body.english-page .fluency-progress-label strong {
+      color: var(--fluency-mint);
+    }
+
+    body.english-page .fluency-sub,
+    body.english-page .fluency-theme,
+    body.english-page .fluency-note { color: #8e9eaa; }
+    body.english-page .fluency-loop { border-color: rgba(112, 229, 209, .25); background: rgba(112, 229, 209, .045); }
+    body.english-page .fluency-loop strong { color: var(--fluency-ink); }
+    body.english-page .fluency-tools { border-color: rgba(112, 229, 209, .3); background: rgba(10, 18, 29, .78); }
+    body.english-page .fluency-progress span { background: var(--fluency-mint); }
+    body.english-page .fluency-filter:hover,
+    body.english-page .fluency-filter.active { color: #0b101b; border-color: var(--fluency-mint); background: var(--fluency-mint); }
+    body.english-page .fluency-card { background: rgba(17, 26, 39, .88); border-color: rgba(160, 190, 200, .16); }
+    body.english-page .fluency-card:hover { border-color: var(--fluency-mint); box-shadow: 0 12px 32px rgba(0, 0, 0, .2); }
+    body.english-page .fluency-card:nth-child(3n + 2) { border-top-color: var(--fluency-coral); }
+    body.english-page .fluency-card a { color: var(--fluency-ink); }
+    body.english-page .fluency-card a:hover { color: var(--fluency-mint); }
+    body.english-page .fluency-channel { background: linear-gradient(135deg, rgba(112, 229, 209, .16), rgba(255, 128, 102, .16)); color: var(--fluency-mint); }
+    body.english-page .fluency-card.done { border-color: var(--fluency-mint); background: rgba(112, 229, 209, .1); }
+    body.english-page .fluency-done { color: var(--fluency-mint); border-color: rgba(112, 229, 209, .45); }
+    body.english-page .fluency-card.done .fluency-done { color: #0b101b; background: var(--fluency-mint); }
+
+    /* English page uses same Motion Design visual system */
+    body.english-page {
+      background:
+        radial-gradient(ellipse 1000px 700px at 10% -5%, rgba(198,255,61,0.16), transparent 60%),
+        radial-gradient(ellipse 1000px 800px at 100% 35%, rgba(198,255,61,0.12), transparent 60%),
+        radial-gradient(ellipse 800px 600px at 15% 100%, rgba(198,255,61,0.10), transparent 60%),
+        radial-gradient(ellipse 700px 500px at 90% 95%, rgba(198,255,61,0.08), transparent 60%),
+        var(--bg);
+    }
+    body.english-page .fluency-section { background: transparent; }
+    body.english-page .fluency-kicker,
+    body.english-page .fluency-section h2,
+    body.english-page .fluency-progress-label strong { color: var(--lime); }
+    body.english-page .fluency-sub,
+    body.english-page .fluency-theme,
+    body.english-page .fluency-note { color: var(--text-dim); }
+    body.english-page .fluency-loop,
+    body.english-page .fluency-tools { border-color: var(--line); background: var(--panel); }
+    body.english-page .fluency-loop strong,
+    body.english-page .fluency-card a { color: var(--text); }
+    body.english-page .fluency-progress span { background: var(--lime); }
+    body.english-page .fluency-filter:hover,
+    body.english-page .fluency-filter.active { color: var(--bg); border-color: var(--lime); background: var(--lime); }
+    body.english-page .fluency-card { background: var(--panel); border-color: var(--line); }
+    body.english-page .fluency-card:hover { border-color: var(--lime); box-shadow: none; }
+    body.english-page .fluency-card:nth-child(3n + 2) { border-top-color: var(--red); }
+    body.english-page .fluency-card a:hover { color: var(--lime); }
+    body.english-page .fluency-channel { background: var(--panel-2); color: var(--lime); }
+    body.english-page .fluency-card.done { border-color: var(--lime); background: rgba(198,255,61,.08); }
+    body.english-page .fluency-done { color: var(--lime); border-color: var(--line); }
+    body.english-page .fluency-card.done .fluency-done { color: var(--bg); background: var(--lime); }
+
+    /* Exact Motion Pipeline layout for English page */
+    body.english-page .fluency-section {
+      max-width: 920px;
+      padding: 56px 24px 100px;
+      background: transparent;
+    }
+    body.english-page .fluency-section h2 {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      line-height: .98;
+      margin: 10px 0 16px;
+    }
+    body.english-page .fluency-sub { max-width: 480px; margin-bottom: 38px; }
+    body.english-page .fluency-loop,
+    body.english-page .fluency-tools {
+      margin: 36px 0 46px;
+      padding: 20px 22px;
+      border: 1px solid var(--line);
+    }
+    body.english-page .fluency-stage {
+      border-top: 1px solid var(--line);
+      border-left: 3px solid transparent;
+      padding: 22px 0;
+    }
+    body.english-page .fluency-stage:hover { border-left-color: var(--lime); }
+    body.english-page .fluency-stage h3 { font-size: 1.5rem; margin-bottom: 3px; }
+    body.english-page .fluency-theme { font-size: .9rem; }
+    body.english-page .fluency-cards {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 18px 0 4px 16px;
+      scrollbar-width: thin;
+    }
+    body.english-page .fluency-card {
+      flex: 0 0 144px;
+      width: 144px;
+      padding: 0;
+      border: 0;
+      border-top: 3px solid var(--lime);
+      background: transparent;
+      transition: transform .2s, opacity .2s;
+    }
+    body.english-page .fluency-card:nth-child(3n + 2) { border-top-color: var(--lime); }
+    body.english-page .fluency-card:hover { transform: translateY(-3px); border-color: transparent; }
+    body.english-page .fluency-card img,
+    body.english-page .fluency-channel {
+      width: 144px;
+      height: 81px;
+      aspect-ratio: auto;
+    }
+    body.english-page .fluency-card img { filter: saturate(.85) contrast(1.05); }
+    body.english-page .fluency-card a { font-size: .8rem; margin-top: 8px; }
+    body.english-page .fluency-note { font-size: .7rem; }
+    body.english-page .fluency-done { top: 7px; right: 6px; padding: 4px 5px; }
+    body.english-page .fluency-card.done { opacity: .58; background: transparent; border-color: transparent; }
+    body.english-page .fluency-card.done img { filter: grayscale(.8) opacity(.45); }
+    .fluency-check { position: absolute; top: 7px; right: 6px; z-index: 2; width: 15px; height: 15px; margin: 0; cursor: pointer; accent-color: #f0d38a; }
+    body.english-page { background: radial-gradient(ellipse 1000px 700px at 10% -5%, rgba(240,211,138,.14), transparent 60%), radial-gradient(ellipse 900px 700px at 100% 85%, rgba(188,139,67,.10), transparent 60%), #11100d; }
+    body.english-page .fluency-section h2,
+    body.english-page .fluency-kicker,
+    body.english-page .fluency-progress-label strong { color: #f0d38a; }
+    body.english-page .fluency-progress span { background: #f0d38a; }
+    body.english-page .fluency-filter:hover,
+    body.english-page .fluency-filter.active { color: #11100d; border-color: #f0d38a; background: #f0d38a; }
+    body.english-page .fluency-card,
+    body.english-page .fluency-card:nth-child(3n + 2) { border-top-color: #f0d38a; }
+    body.english-page .fluency-card:hover { border-color: #f0d38a; }
+    body.english-page .fluency-card.done { border-color: #f0d38a; background: rgba(240,211,138,.08); }
+    body.english-page .fluency-check { accent-color: #f0d38a; }
+
+    @media(max-width:680px) {
+      .fluency-section {
+        padding: 0 18px 80px;
+      }
+
+      .fluency-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .fluency-tools { grid-template-columns: 1fr; }
+      .fluency-filters { justify-content: flex-start; }
+    }
+
+    @media(max-width:420px) {
+      .fluency-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width:600px) {
+      .hero {
+        padding: 44px 18px 30px;
+      }
+
+      .wrap {
+        padding: 0 18px 80px;
+      }
+
+      .track-header {
+        padding-left: 0;
+      }
+
+      .track {
+        border-left: none;
+        padding-left: 0;
+      }
+
+      .track.complete {
+        border-left: none;
+        border-top-color: var(--lime);
+        border-top-width: 2px;
+      }
+
+      .clip-lane {
+        padding-left: 0;
+      }
+
+      .marker {
+        margin-left: 0;
+      }
+
+      .bin-title {
+        margin-left: 0;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="grain"></div>
+  <div class="grain"></div>
 
-<div class="titlebar">
-  <div class="left">
-    <svg class="logo" width="20" height="20" viewBox="0 0 32 32">
-      <rect class="sq1" x="5" y="4" width="13" height="11" rx="3" fill="var(--lime)"/>
-      <rect class="sq2" x="19" y="12" width="9" height="9" rx="2.4" fill="var(--lime)"/>
-      <rect class="sq3" x="10" y="20" width="7" height="7" rx="2" fill="var(--lime)"/>
-      <rect class="sq4" x="4" y="25" width="3.5" height="3.5" rx="1" fill="var(--lime)"/>
-    </svg>
-    <span class="filename">Motion Design Pipeline</span>
-  </div>
-  <div class="right" id="titlebarCount">00 / 21 CLIPS LOGGED</div>
-</div>
-<div class="sprockets"></div>
-
-<div class="hero">
-  <h1>MOTION<br>DESIGN<br>PIPELINE</h1>
-  <p class="sub">20 videos, 6 tracks, one direction — from color and type fundamentals to a full applied scene.</p>
-
-  <div class="scrubber-wrap">
-    <div class="scrubber-top">
-      <span class="scrubber-label"></span>
-      <span class="scrubber-count" id="scrubberCount">0%</span>
+  <div class="titlebar">
+    <div class="left">
+      <svg class="logo" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
+        <g class="motion-icon">
+          <rect class="sq1" x="5" y="4" width="13" height="11" rx="3" fill="var(--lime)" />
+          <rect class="sq2" x="19" y="12" width="9" height="9" rx="2.4" fill="var(--lime)" />
+          <rect class="sq3" x="10" y="20" width="7" height="7" rx="2" fill="var(--lime)" />
+          <rect class="sq4" x="4" y="25" width="3.5" height="3.5" rx="1" fill="var(--lime)" />
+        </g>
+        <g class="language-icon">
+          <path class="language-letter" d="M7 25 14.5 6h3L25 25h-3.2l-1.6-4.5h-8.4L10.2 25zm5.8-7.2h6.3L16 9.2z"
+            fill="#f0d34a" />
+          <g class="language-letter-old" style="display:none">
+            <path class="language-letter" d="M7 25 14.5 6h3L25 25h-3.2l-1.6-4.5h-8.4L10.2 25zm5.8-7.2h6.3L16 9.2z"
+              fill="#f0d34a" />
+            <path d="M28 9.5c-3.6-1.7-7.1-1.3-12 1.2v14c4.9-2.5 8.4-2.9 12-1.2z" fill="#f0d34a" />
+            <path d="M16 10.7v14" fill="none" stroke="#10100d" stroke-width="1.4" />
+          </g>
+          <g class="language-orbit">
+            <circle cx="16" cy="4.5" r="1.6" fill="#ff8b3d" />
+          </g>
+        </g>
+      </svg>
+      <span class="filename">Motion Design Pipeline</span>
     </div>
-    <div class="scrubber" id="scrubber">
-      <div class="scrubber-line"></div>
-      <div class="scrubber-fill" id="scrubberFill"></div>
-      <div class="playhead" id="playhead" style="left:0%;"></div>
+    <div class="right" id="titlebarCount">00 / 21 CLIPS LOGGED</div>
+    <nav class="site-nav" aria-label="Site sections">
+      <a href="#english-fluency" id="page-switcher" data-page="english-fluency">ENGLISH FLUENCY LAB →</a>
+    </nav>
+  </div>
+  <section class="pipeline-section page-view active" id="motion-pipeline">
+    <div class="section-rail">SECTION 01 / MOTION DESIGN</div>
+    <div class="sprockets"></div>
+
+    <div class="hero">
+      <h1>MOTION<br>DESIGN<br>PIPELINE</h1>
+      <p class="sub">20 videos, 6 tracks, one direction — from color and type fundamentals to a full applied scene.</p>
+
+      <div class="scrubber-wrap">
+        <div class="scrubber-top">
+          <span class="scrubber-label"></span>
+          <span class="scrubber-count" id="scrubberCount">0%</span>
+        </div>
+        <div class="scrubber" id="scrubber">
+          <div class="scrubber-line"></div>
+          <div class="scrubber-fill" id="scrubberFill"></div>
+          <div class="playhead" id="playhead" style="left:0%;"></div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<div class="sprockets"></div>
+    <div class="sprockets"></div>
 
-<div class="wrap">
+    <div class="wrap">
 
-  <div class="ritual">
-    <div class="tag">DAILY RITUAL — REPEAT PER CLIP</div>
-    <ol>
-      <li><strong>Watch once</strong>, no pausing — just absorb the idea.</li>
-      <li><strong>Rewatch with notes</strong> — write down the exact steps and settings.</li>
-      <li><strong>Practice immediately</strong> on a real project scene, not a random one.</li>
-      <li><strong>Log one line</strong> — what worked, what to reuse.</li>
-    </ol>
-  </div>
+      <div class="ritual">
+        <div class="tag">DAILY RITUAL — REPEAT PER CLIP</div>
+        <ol>
+          <li><strong>Watch once</strong>, no pausing — just absorb the idea.</li>
+          <li><strong>Rewatch with notes</strong> — write down the exact steps and settings.</li>
+          <li><strong>Practice immediately</strong> on a real project scene, not a random one.</li>
+          <li><strong>Log one line</strong> — what worked, what to reuse.</li>
+        </ol>
+      </div>
 
-  <div id="tracks"></div>
+      <div id="tracks"></div>
 
-  <div class="bin-title">MEDIA BIN — UNSCHEDULED</div>
-  <div class="bin" id="bin"></div>
+      <div class="bin-title">MEDIA BIN — UNSCHEDULED</div>
+      <div class="bin" id="bin"></div>
 
-  <div class="footer">
-    After Day 6, re-evaluate your storyboard against everything practiced this week, and move into full scene-by-scene animation with this stronger toolkit.
-  </div>
+      <div class="footer">
+        After Day 6, re-evaluate your storyboard against everything practiced this week, and move into full
+        scene-by-scene animation with this stronger toolkit.
+      </div>
 
-</div>
+    </div>
+  </section>
 
-<script>
-const days = [
-  {
-    title: "Day 1",
-    theme: "Design fundamentals — color & typography",
-    videos: [
-      { t: "How to Select Good Colors", id: "_TYgzwiMcZc" },
-      { t: "How to Use Colors", id: "LXyYlUmPDDY" },
-      { t: "Typography Without Bullsh*t (Masterclass)", id: "BWRdNeNkph4", note: "Longer video — give this extra time" }
-    ],
-    practice: "Lock a color palette (2-3 colors + 1 accent) and a type pairing for your current video. Save it as a mini style guide in Figma."
-  },
-  {
-    title: "Day 2",
-    theme: "AE refresher + Figma → After Effects pipeline",
-    videos: [
-      { t: "Learn After Effects in 20 Minutes (Hindi, Beginner)", id: "gIr5YSJGHLk", note: "Skip what you already know — just a refresher" },
-      { t: "How to Do UI Design and Animation, Part 1", id: "4NcKmF5TiSw" },
-      { t: "How to Export Figma to After Effects", id: "1b1vNKvnoVo" },
-      { t: "Figma to After Effects — Instant Transfer with Overlord", id: "I6QlicggqtY" }
-    ],
-    practice: "Export one real UI screen from your project (e.g. the upload screen from Scene 5) from Figma into AE using Overlord. Keep the layers clean and organized."
-  },
-  {
-    title: "Day 3",
-    theme: "Core animation building blocks",
-    videos: [
-      { t: "Overlapping Keyframes: Biggest Trick to Smooth Animation", id: "jp-XjJGxXHg" },
-      { t: "Master Smooth Motion & Premium Look (Keyframes, Graph Editor, Camera)", id: "RY7MtvhnMyA" },
-      { t: "This Animation Technique Works Every Time", id: "ythBGTLjot8" }
-    ],
-    practice: "Animate the entrance of the UI screen from Day 2 using overlapping keyframes and graph editor easing."
-  },
-  {
-    title: "Day 4",
-    theme: "Text animation & grid systems",
-    videos: [
-      { t: "How to Master Text Animation in After Effects (5 Min)", id: "h5F3QM72PY0" },
-      { t: "Interactive UI Text Animation (No Keyframes)", id: "XPiJUkZg8pU" },
-      { t: "Grid Builder for After Effects Tutorial", id: "0nle15tZi1Y" }
-    ],
-    practice: "Animate the headline / kinetic typography scene of your storyboard, built on a proper grid."
-  },
-  {
-    title: "Day 5",
-    theme: "Signature effects — Apple-style trends",
-    videos: [
-      { t: "How to Shape Morph Like Apple in After Effects", id: "XJIr419bY9E" },
-      { t: "Create Cinematic Eye-Candy With Gradients", id: "oSdEEQ-e-xE" },
-      { t: "Top 5 Liquid Gradient Trends in After Effects", id: "ZsUUSkN0llM" }
-    ],
-    practice: "Add one shape-morph transition between two scenes in your project, and a gradient background to your intro or outro."
-  },
-  {
-    title: "Day 6",
-    theme: "Applied SaaS capstone",
-    videos: [
-      { t: "How to Prepare a SaaS Explainer (Storyboarding, Transitions, AI Design)", id: "EcClo7keJlU" },
-      { t: "SaaS UI Animation Tutorial — Recreating a ChatGPT Ad in AE", id: "ODJrI0iDUS4" }
-    ],
-    practice: "Pick one full scene from your project, start to finish, and animate it end-to-end using everything from Days 1-5."
-  }
-];
+  <section class="fluency-section page-view" id="english-fluency">
+    <div class="section-rail">SECTION 02 / ENGLISH FLUENCY</div>
+    <div class="fluency-kicker">SPEAK / LISTEN / SHADOW / REPEAT</div>
+    <h2>ENGLISH<br>FLUENCY LAB</h2>
+    <p class="fluency-sub">Focused video track for stronger speaking, clearer pronunciation, natural phrases, and
+      repeatable 30-day practice.</p>
+    <div class="fluency-loop"><strong>THE LOOP:</strong> listen once · shadow aloud · save five phrases · speak for two
+      minutes.</div>
+    <div class="fluency-tools" aria-label="Fluency progress controls">
+      <div>
+        <div class="fluency-progress-label"><span>LAB PROGRESS</span><strong id="fluencyProgressText">0 / 14 COMPLETE</strong></div>
+        <div class="fluency-progress"><span id="fluencyProgressBar"></span></div>
+      </div>
+      <div class="fluency-filters" role="tablist" aria-label="Filter fluency stages">
+        <button class="fluency-filter active" data-filter="all" role="tab">ALL</button>
+        <button class="fluency-filter" data-filter="1" role="tab">01</button>
+        <button class="fluency-filter" data-filter="2" role="tab">02</button>
+        <button class="fluency-filter" data-filter="3" role="tab">03</button>
+        <button class="fluency-filter" data-filter="4" role="tab">04</button>
+      </div>
+    </div>
 
-const bonus = [
-  { t: "Learn Web Design For Beginners (Full Course)", id: "j6Ule7GXaRs", note: "Long course — watch in small chunks during rest time." },
-  { t: "Proximity Animation with Claude", id: "T9mMTVLmq70", note: "Title unclear — confirm what it covers first." }
-];
+    <div class="fluency-stage">
+      <div class="fluency-kicker">STAGE 01</div>
+      <h3>Build Input Habit</h3>
+      <div class="fluency-theme">Start with repeatable routine and useful core vocabulary.</div>
+      <div class="fluency-cards">
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=SoUZ3wovZAs" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/SoUZ3wovZAs/hqdefault.jpg"
+              alt="Improve Your English in 30 Days" loading="lazy">Improve Your English in 30 Days</a>
+          <div class="fluency-note">Action plan · start here</div>
+        </div>
+        <div class="fluency-card"><a href="https://www.youtube.com/@linguamarina/videos" target="_blank" rel="noopener">
+            <div class="fluency-channel">LM</div>LinguaMarina Video Library
+          </a>
+          <div class="fluency-note">Browse · choose one daily</div>
+        </div>
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=7AW6ORQLWvU" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/7AW6ORQLWvU/hqdefault.jpg" alt="If You Know These 36 Words, Your English Is Excellent"
+              loading="lazy">If You Know These 36 Words, Your English Is Excellent</a>
+          <div class="fluency-note">Vocabulary foundation</div>
+        </div>
+      </div>
+    </div>
 
-function thumbUrl(id){ return "https://img.youtube.com/vi/" + id + "/hqdefault.jpg"; }
-function ytUrl(id){ return "https://www.youtube.com/watch?v=" + id; }
+    <div class="fluency-stage">
+      <div class="fluency-kicker">STAGE 02</div>
+      <h3>Comprehensible Input</h3>
+      <div class="fluency-theme">Understand more real English, then turn input into speech.</div>
+      <div class="fluency-cards">
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=bo47JoSxl1s" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/bo47JoSxl1s/hqdefault.jpg" alt="The ONLY Way to Become Fluent in English"
+              loading="lazy">The ONLY Way to Become Fluent in English</a>
+          <div class="fluency-note">Comprehensible input method</div>
+        </div>
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=mExaHbA2RWo" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/mExaHbA2RWo/hqdefault.jpg" alt="Speaking Practice 03"
+              loading="lazy">Speaking Practice 03</a>
+          <div class="fluency-note">Natural delivery</div>
+        </div>
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=P26AE7NLx4Q" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/P26AE7NLx4Q/hqdefault.jpg" alt="Learn English with TV Series"
+              loading="lazy">Learn English with TV Series</a>
+          <div class="fluency-note">Interview listening practice</div>
+        </div>
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=951xktt7s6Q" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/951xktt7s6Q/hqdefault.jpg"
+              alt="Why You Can't Speak English" loading="lazy">Why You Can't Speak English</a>
+          <div class="fluency-note">5 lessons from 13 years of teaching</div>
+        </div>
+      </div>
+    </div>
 
-const tracksEl = document.getElementById('tracks');
-const chevronSvg = '<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+    <div class="fluency-stage">
+      <div class="fluency-kicker">STAGE 03</div>
+      <h3>Fluency + Natural Speech</h3>
+      <div class="fluency-theme">Speaking fluency, rhythm, linking, and natural everyday English.</div>
+      <div class="fluency-cards">
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=t26iooY3PAo" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/t26iooY3PAo/hqdefault.jpg"
+              alt="Natural English Practice 05" loading="lazy">Natural English Practice 05</a>
+          <div class="fluency-note">Listen + repeat</div>
+        </div>
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=LDkvRFCm8No" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/LDkvRFCm8No/hqdefault.jpg"
+              alt="How Can I Speak English More Fluently" loading="lazy">How Can I Speak English More Fluently?</a>
+          <div class="fluency-note">Ask BBC Learning English</div>
+        </div>
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=f96t2rsb4Lw" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/f96t2rsb4Lw/hqdefault.jpg"
+              alt="Natural English Practice 07" loading="lazy">Natural English Practice 07</a>
+          <div class="fluency-note">Speech patterns</div>
+        </div>
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=vHBrMxIEEwY" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/vHBrMxIEEwY/hqdefault.jpg"
+              alt="Natural English Practice 08" loading="lazy">Natural English Practice 08</a>
+          <div class="fluency-note">Shadowing session</div>
+        </div>
+      </div>
+    </div>
 
-function clipHtml(v, di, vi){
-  return `
+    <div class="fluency-stage">
+      <div class="fluency-kicker">STAGE 04</div>
+      <h3>Keep Practice Going</h3>
+      <div class="fluency-theme">Return often. Build flexible, confident speaking over time.</div>
+      <div class="fluency-cards">
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=axYAW7PuSIM" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/axYAW7PuSIM/hqdefault.jpg" alt="Fluency Practice 10"
+              loading="lazy">Fluency Practice 10</a>
+          <div class="fluency-note">Keep speaking</div>
+        </div>
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=_cAfSxeu_nY" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/_cAfSxeu_nY/hqdefault.jpg" alt="Fluency Practice 11"
+              loading="lazy">Fluency Practice 11</a>
+          <div class="fluency-note">Final loop</div>
+        </div>
+        <div class="fluency-card"><a href="https://www.youtube.com/watch?v=bLvWThxnw_8&list=WL&index=5&t=153s" target="_blank"
+            rel="noopener"><img src="https://img.youtube.com/vi/bLvWThxnw_8/hqdefault.jpg" alt="English Fluency Practice 12"
+              loading="lazy">English Fluency Practice 12</a>
+          <div class="fluency-note">Start at 2:33 · listen + shadow</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const pageViews = document.querySelectorAll('.page-view');
+    const pageSwitcher = document.getElementById('page-switcher');
+    const faviconLink = document.querySelector('link[rel="icon"]');
+    const favicons = {
+      motion: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0a0a0a"/><rect x="5" y="4" width="13" height="11" rx="3" fill="#c6ff3d"/><rect x="19" y="12" width="9" height="9" rx="2.4" fill="#c6ff3d"/><rect x="10" y="20" width="7" height="7" rx="2" fill="#c6ff3d"/></svg>`,
+      english: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#10100d"/><path d="M7 26 14.5 6h3L25 26h-3.2l-1.6-4.5h-8.4L10.2 26zm5.8-7.2h6.3L16 9.2z" fill="#f0d34a"/></svg>`
+    };
+    const fluencyStages = [...document.querySelectorAll('.fluency-stage')];
+    const fluencyCards = [...document.querySelectorAll('.fluency-card')];
+    const fluencyProgressText = document.getElementById('fluencyProgressText');
+    const fluencyProgressBar = document.getElementById('fluencyProgressBar');
+    const fluencyTotal = fluencyCards.length;
+    fluencyStages.forEach((stage, index) => stage.dataset.stage = String(index + 1));
+    fluencyCards.forEach((card, index) => {
+      const key = 'fluency-card-' + index;
+      const done = localStorage.getItem(key) === 'done';
+      card.classList.toggle('done', done);
+      const check = document.createElement('input');
+      check.className = 'fluency-check';
+      check.type = 'checkbox';
+      check.checked = done;
+      check.setAttribute('aria-label', 'Mark resource complete');
+      check.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        check.checked = !check.checked;
+        const next = check.checked;
+        card.classList.toggle('done', next);
+        localStorage.setItem(key, next ? 'done' : 'open');
+        updateFluencyProgress();
+      });
+      card.appendChild(check);
+    });
+    function updateFluencyProgress() {
+      const complete = document.querySelectorAll('.fluency-card.done').length;
+      const percent = fluencyTotal ? complete / fluencyTotal * 100 : 0;
+      fluencyProgressText.textContent = complete + ' / ' + fluencyTotal + ' COMPLETE';
+      fluencyProgressBar.style.width = percent + '%';
+    }
+    document.querySelectorAll('.fluency-filter').forEach(filter => filter.addEventListener('click', () => {
+      const selected = filter.dataset.filter;
+      document.querySelectorAll('.fluency-filter').forEach(item => item.classList.toggle('active', item === filter));
+      fluencyStages.forEach(stage => stage.classList.toggle('is-hidden', selected !== 'all' && stage.dataset.stage !== selected));
+    }));
+    updateFluencyProgress();
+    function updateFavicon(id) {
+      faviconLink.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(favicons[id === 'english-fluency' ? 'english' : 'motion']);
+    }
+    function showPage(id) {
+      pageViews.forEach(view => view.classList.toggle('active', view.id === id));
+      const nextPage = id === 'english-fluency' ? 'motion-pipeline' : 'english-fluency';
+      pageSwitcher.dataset.page = nextPage;
+      pageSwitcher.href = '#' + nextPage;
+      pageSwitcher.textContent = nextPage === 'english-fluency' ? 'ENGLISH FLUENCY LAB →' : 'MOTION PIPELINE →';
+      document.body.classList.toggle('english-page', id === 'english-fluency');
+      updateFavicon(id);
+      document.querySelector('.filename').textContent = id === 'english-fluency' ? 'English Fluency Lab' : 'Motion Design Pipeline';
+      history.replaceState(null, '', '#' + id);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    pageSwitcher.addEventListener('click', event => { event.preventDefault(); showPage(pageSwitcher.dataset.page); });
+    const initialPage = location.hash.slice(1);
+    if (initialPage === 'english-fluency' || initialPage === 'motion-pipeline') showPage(initialPage);
+  </script>
+
+  <script>
+    const days = [
+      {
+        title: "Day 1",
+        theme: "Design fundamentals — color & typography",
+        videos: [
+          { t: "How to Select Good Colors", id: "_TYgzwiMcZc" },
+          { t: "How to Use Colors", id: "LXyYlUmPDDY" },
+          { t: "Typography Without Bullsh*t (Masterclass)", id: "BWRdNeNkph4", note: "Longer video — give this extra time" }
+        ],
+        practice: "Lock a color palette (2-3 colors + 1 accent) and a type pairing for your current video. Save it as a mini style guide in Figma."
+      },
+      {
+        title: "Day 2",
+        theme: "AE refresher + Figma → After Effects pipeline",
+        videos: [
+          { t: "Learn After Effects in 20 Minutes (Hindi, Beginner)", id: "gIr5YSJGHLk", note: "Skip what you already know — just a refresher" },
+          { t: "How to Do UI Design and Animation, Part 1", id: "4NcKmF5TiSw" },
+          { t: "How to Export Figma to After Effects", id: "1b1vNKvnoVo" },
+          { t: "Figma to After Effects — Instant Transfer with Overlord", id: "I6QlicggqtY" }
+        ],
+        practice: "Export one real UI screen from your project (e.g. the upload screen from Scene 5) from Figma into AE using Overlord. Keep the layers clean and organized."
+      },
+      {
+        title: "Day 3",
+        theme: "Core animation building blocks",
+        videos: [
+          { t: "Overlapping Keyframes: Biggest Trick to Smooth Animation", id: "jp-XjJGxXHg" },
+          { t: "Master Smooth Motion & Premium Look (Keyframes, Graph Editor, Camera)", id: "RY7MtvhnMyA" },
+          { t: "This Animation Technique Works Every Time", id: "ythBGTLjot8" }
+        ],
+        practice: "Animate the entrance of the UI screen from Day 2 using overlapping keyframes and graph editor easing."
+      },
+      {
+        title: "Day 4",
+        theme: "Text animation & grid systems",
+        videos: [
+          { t: "How to Master Text Animation in After Effects (5 Min)", id: "h5F3QM72PY0" },
+          { t: "Interactive UI Text Animation (No Keyframes)", id: "XPiJUkZg8pU" },
+          { t: "Grid Builder for After Effects Tutorial", id: "0nle15tZi1Y" }
+        ],
+        practice: "Animate the headline / kinetic typography scene of your storyboard, built on a proper grid."
+      },
+      {
+        title: "Day 5",
+        theme: "Signature effects — Apple-style trends",
+        videos: [
+          { t: "How to Shape Morph Like Apple in After Effects", id: "XJIr419bY9E" },
+          { t: "Create Cinematic Eye-Candy With Gradients", id: "oSdEEQ-e-xE" },
+          { t: "Top 5 Liquid Gradient Trends in After Effects", id: "ZsUUSkN0llM" }
+        ],
+        practice: "Add one shape-morph transition between two scenes in your project, and a gradient background to your intro or outro."
+      },
+      {
+        title: "Day 6",
+        theme: "Applied SaaS capstone",
+        videos: [
+          { t: "How to Prepare a SaaS Explainer (Storyboarding, Transitions, AI Design)", id: "EcClo7keJlU" },
+          { t: "SaaS UI Animation Tutorial — Recreating a ChatGPT Ad in AE", id: "ODJrI0iDUS4" }
+        ],
+        practice: "Pick one full scene from your project, start to finish, and animate it end-to-end using everything from Days 1-5."
+      }
+    ];
+
+    const bonus = [
+      { t: "Learn Web Design For Beginners (Full Course)", id: "j6Ule7GXaRs", note: "Long course — watch in small chunks during rest time." },
+      { t: "Proximity Animation with Claude", id: "T9mMTVLmq70", note: "Title unclear — confirm what it covers first." }
+    ];
+
+    function thumbUrl(id) { return "https://img.youtube.com/vi/" + id + "/hqdefault.jpg"; }
+    function ytUrl(id) { return "https://www.youtube.com/watch?v=" + id; }
+
+    const tracksEl = document.getElementById('tracks');
+    const chevronSvg = '<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+
+    function clipHtml(v, di, vi) {
+      return `
     <div class="clip" data-day="${di}" data-v="${vi}">
       <a class="clip-thumb" href="${ytUrl(v.id)}" target="_blank" rel="noopener">
         <span class="clip-bar"></span>
@@ -552,19 +1373,19 @@ function clipHtml(v, di, vi){
       ${v.note ? `<div class="clip-note">${v.note}</div>` : ''}
     </div>
   `;
-}
+    }
 
-days.forEach((day, di) => {
-  const trackEl = document.createElement('div');
-  trackEl.className = 'track';
-  trackEl.id = 'track-' + di;
+    days.forEach((day, di) => {
+      const trackEl = document.createElement('div');
+      trackEl.className = 'track';
+      trackEl.id = 'track-' + di;
 
-  const clipsHtml = day.videos.map((v, vi) => clipHtml(v, di, vi)).join('');
+      const clipsHtml = day.videos.map((v, vi) => clipHtml(v, di, vi)).join('');
 
-  trackEl.innerHTML = `
+      trackEl.innerHTML = `
     <button class="track-header" data-day="${di}">
       <div>
-        <div class="track-meta">TRACK ${String(di+1).padStart(2,'0')} — ${day.title.toUpperCase()}</div>
+        <div class="track-meta">TRACK ${String(di + 1).padStart(2, '0')} — ${day.title.toUpperCase()}</div>
         <div class="track-title">${day.title}</div>
         <div class="track-theme">${day.theme}</div>
       </div>
@@ -576,78 +1397,79 @@ days.forEach((day, di) => {
       <div class="marker-text">${day.practice}</div>
     </div>
   `;
-  tracksEl.appendChild(trackEl);
-});
+      tracksEl.appendChild(trackEl);
+    });
 
-const binEl = document.getElementById('bin');
-bonus.forEach(b => {
-  const el = document.createElement('div');
-  el.className = 'bin-item';
-  el.innerHTML = `
+    const binEl = document.getElementById('bin');
+    bonus.forEach(b => {
+      const el = document.createElement('div');
+      el.className = 'bin-item';
+      el.innerHTML = `
     <a class="clip-thumb" style="width:160px;height:90px;" href="${ytUrl(b.id)}" target="_blank" rel="noopener">
       <img src="${thumbUrl(b.id)}" alt="" loading="lazy">
     </a>
     <a class="clip-title" href="${ytUrl(b.id)}" target="_blank" rel="noopener">${b.t}</a>
     <div class="bin-note">${b.note}</div>
   `;
-  binEl.appendChild(el);
-});
+      binEl.appendChild(el);
+    });
 
-// expand/collapse tracks
-document.querySelectorAll('.track-header').forEach(btn => {
-  btn.addEventListener('click', () => {
-    btn.closest('.track').classList.toggle('open');
-  });
-});
-document.getElementById('track-0').classList.add('open');
+    // expand/collapse tracks
+    document.querySelectorAll('.track-header').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.closest('.track').classList.toggle('open');
+      });
+    });
+    document.getElementById('track-0').classList.add('open');
 
-// scrubber ticks (Day 0 - Day 6)
-const scrubber = document.getElementById('scrubber');
-for(let i=0;i<=6;i++){
-  const pct = (i/6)*100;
-  const tick = document.createElement('div');
-  tick.className = 'tick';
-  tick.style.left = pct + '%';
-  scrubber.appendChild(tick);
-  const label = document.createElement('div');
-  label.className = 'tick-label';
-  label.style.left = pct + '%';
-  label.textContent = 'D' + i;
-  scrubber.appendChild(label);
-}
+    // scrubber ticks (Day 0 - Day 6)
+    const scrubber = document.getElementById('scrubber');
+    for (let i = 0; i <= 6; i++) {
+      const pct = (i / 6) * 100;
+      const tick = document.createElement('div');
+      tick.className = 'tick';
+      tick.style.left = pct + '%';
+      scrubber.appendChild(tick);
+      const label = document.createElement('div');
+      label.className = 'tick-label';
+      label.style.left = pct + '%';
+      label.textContent = 'D' + i;
+      scrubber.appendChild(label);
+    }
 
-// progress tracking (in-memory only, resets on reload)
-const totalVideos = days.reduce((sum, d) => sum + d.videos.length, 0);
-const fillEl = document.getElementById('scrubberFill');
-const playheadEl = document.getElementById('playhead');
-const countEl = document.getElementById('scrubberCount');
-const titlebarCountEl = document.getElementById('titlebarCount');
+    // progress tracking (in-memory only, resets on reload)
+    const totalVideos = days.reduce((sum, d) => sum + d.videos.length, 0);
+    const fillEl = document.getElementById('scrubberFill');
+    const playheadEl = document.getElementById('playhead');
+    const countEl = document.getElementById('scrubberCount');
+    const titlebarCountEl = document.getElementById('titlebarCount');
 
-function updateProgress(){
-  const checked = document.querySelectorAll('.clip-check:checked').length;
-  const pct = totalVideos ? (checked / totalVideos) * 100 : 0;
-  fillEl.style.width = pct + '%';
-  playheadEl.style.left = pct + '%';
-  countEl.textContent = Math.round(pct) + '%';
-  titlebarCountEl.textContent = String(checked).padStart(2,'0') + ' / ' + totalVideos + ' CLIPS LOGGED';
-}
+    function updateProgress() {
+      const checked = document.querySelectorAll('.clip-check:checked').length;
+      const pct = totalVideos ? (checked / totalVideos) * 100 : 0;
+      fillEl.style.width = pct + '%';
+      playheadEl.style.left = pct + '%';
+      countEl.textContent = Math.round(pct) + '%';
+      titlebarCountEl.textContent = String(checked).padStart(2, '0') + ' / ' + totalVideos + ' CLIPS LOGGED';
+    }
 
-document.querySelectorAll('.clip-check').forEach(cb => {
-  cb.addEventListener('change', () => {
-    const clip = cb.closest('.clip');
-    clip.classList.toggle('checked', cb.checked);
+    document.querySelectorAll('.clip-check').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const clip = cb.closest('.clip');
+        clip.classList.toggle('checked', cb.checked);
 
-    const dayIdx = cb.dataset.day;
-    const dayChecks = document.querySelectorAll(`.clip-check[data-day="${dayIdx}"]`);
-    const allChecked = Array.from(dayChecks).every(c => c.checked);
-    document.getElementById('track-' + dayIdx).classList.toggle('complete', allChecked);
+        const dayIdx = cb.dataset.day;
+        const dayChecks = document.querySelectorAll(`.clip-check[data-day="${dayIdx}"]`);
+        const allChecked = Array.from(dayChecks).every(c => c.checked);
+        document.getElementById('track-' + dayIdx).classList.toggle('complete', allChecked);
+
+        updateProgress();
+      });
+    });
 
     updateProgress();
-  });
-});
-
-updateProgress();
-</script>
+  </script>
 
 </body>
+
 </html>
